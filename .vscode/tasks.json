@@ -10,7 +10,7 @@
                 "-Wall",
                 "-Wextra",
                 "-g",
-                "${workspaceFolder}/main.cpp",
+                "${workspaceFolder}/*.cpp",
                 "-o",
                 "${workspaceFolder}/xyzbank.exe"
             ],
