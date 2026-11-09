@@ -1,137 +1,141 @@
 #include <iostream>
+#include "account.h"
+
 using namespace std;
 
-//Account Class
-class Account
-{
-    private:
-        double balance; //PRIVATE DATA FOR MEMBER ACC BALANCE
-
-        //Constructor: initializes balance to 1000.0 or to 0.0 if the initial balance is invalid
-    public:
-        Account(double initialBalance)
-        {
-            if (initialBalance>=1000.00)
-            {
-                balance = initialBalance;
-            }
-            else
-            {
-                balance=0.00;
-                cout<<"[WARNING] Initial balance was invalid (must be at least $1000.00 or more). Balance set to $0.00.\n";
-            }}
-
-// Deposit function: adds amount to current balance
-        void deposit(double amount)
-        {
-            if (amount <= 0)
-            {
-                cout << "INVALID DEPOSIT AMOUNT. PLEASE ENTER A POSITIVE VALUE.\n";
-                return;
-            }
-            balance = balance +  amount;
-            cout << "AMOUNT DEPOSITED SUCCESSFULLY $" << amount << "\n";
-            cout << "BALANCE: $" << balance << "\n";
-        }
-// Withdraw function: debits money and checks against balance
-        void withdraw(double amount)
-        {
-            if (amount <= balance)
-            {
-                balance = balance - amount;
-                cout << " WITHDRAW SUCCESSFULL $" << amount << "\n";
-                cout << "BALANCE: $" << balance << "\n"; // DISPLAY ACC BALANCE
-            }
-            else
-            {
-                cout << "DEBIT AMOUNT EXCEED ACCOUNT BALANCE.\n";
-            }
-        }
-
-        double getBalance() const
-        {
-            return balance;
-        }
-};
-
+// Function to display the interactive ATM Menu
 void displayMenu()
 {
     cout << "\n============================================\n";
     cout << "           XYZ BANK ATM SYSTEM              \n";
     cout << "============================================\n";
-    cout << " 1. ACCOUNT BALANCE\n";
-    cout << " 2. ACCOUNT DEPOSIT\n";
-    cout << " 3. ACCOUNT WITHDRAW\n";
-    cout << " 4. EXIT\n";
+    cout << " 1. Check Account Balance\n";
+    cout << " 2. Deposit Money\n";
+    cout << " 3. Withdraw Money (Chequing applies fee)\n";
+    cout << " 4. Calculate & Apply Interest (Savings)\n";
+    cout << " 5. Exit Program\n";
     cout << "============================================\n";
-    cout << "SELECT YOUR TRANSACTION TYPE (1-4): ";
+    cout << "Select your transaction type (1-5): ";
 }
 
 void pauseAndContinue()
 {
-    cout << "\nPLEASE CLICK ENTER TO RETURN TO MAIN MENUE...";
+    cout << "\nPress Enter to return to main menu...";
     cin.ignore(10000, '\n');
     cin.get();
 }
 
 int main()
 {
-        // 1. Display Welcome Banner First
+    // Display Welcome Banner
     cout << "============================================\n";
     cout << "         WELCOME TO XYZ BANK SYSTEM         \n";
-    cout << "           XYZ BANK ATM INTERFACE           \n";
+    cout << "      Object-Oriented Inheritance ATM       \n";
     cout << "============================================\n\n";
 
-    Account myAccount(2000.0); // Create an account with an initial balance of 1000.0
-    cout << "[System] YOUR ACCOUNT BALANCE IS: $" << myAccount.getBalance() << "\n";
+    // Initialize accounts with starting balances and rates/fees
+    SavingsAccount mySavings(2500.0, 0.05);   // $2500.00 initial balance, 5% interest rate (0.05)
+    ChequingAccount myChequing(1500.0, 2.50); // $1500.00 initial balance, $2.50 transaction fee
 
-    cout << "\n       PRESS ENTER TO CONTINUE...";
-    cin.get();
-
-    int choice;
+    int choice, accountType = 1;
     double amount;
 
-    // 3. Interactive ATM Menu Loop
+    // Interactive ATM Menu Loop
     while (true)
     {
         displayMenu();
 
-    if (!(cin >> choice))
+        if (!(cin >> choice))
         {
-            cout << "INVALID PLEASE ENTER  1-4.\n";
+            cout << "Invalid input. Please enter a number between 1 and 5.\n";
             cin.clear();
             cin.ignore(10000, '\n');
             continue;
         }
 
-        // Switch statement to handle user selections
+        if (choice == 5)
+        {
+            cout << "Thank you for banking with XYZ Bank. Goodbye!\n";
+            break;
+        }
+
+        // For options 1 through 3, ask which account type the user wants to use
+        if (choice >= 1 && choice <= 3)
+        {
+            cout << "\nSelect Account Type:\n";
+            cout << " 1. Savings Account\n";
+            cout << " 2. Chequing Account\n";
+            cout << "Enter choice (1-2): ";
+            cin >> accountType;
+
+            if (accountType != 1 && accountType != 2)
+            {
+                cout << "Invalid account type selected.\n";
+                pauseAndContinue();
+                continue;
+            }
+        }
+
         switch (choice)
         {
-            case 1:
-                cout << "\nACCONT BALANCE: $" << myAccount.getBalance() << "\n";
+            case 1: // Check Balance
+                if (accountType == 1)
+                {
+                    cout << "\nSavings Account Balance: $" << mySavings.getBalance() << "\n";
+                }
+                else
+                {
+                    cout << "\nChequing Account Balance: $" << myChequing.getBalance() << "\n";
+                }
                 pauseAndContinue();
                 break;
 
-            case 2:
-                cout << "ACCONT DEPOSIT: $";
+            case 2: // Deposit Money
+                cout << "Enter amount to deposit: $";
                 cin >> amount;
-                myAccount.deposit(amount);
+                if (accountType == 1)
+                {
+                    mySavings.deposit(amount);
+                    cout << "Updated Savings Balance: $" << mySavings.getBalance() << "\n";
+                }
+                else
+                {
+                    myChequing.deposit(amount);
+                    cout << "Updated Chequing Balance: $" << myChequing.getBalance() << "\n";
+                }
                 pauseAndContinue();
                 break;
 
-            case 3:
-                cout << "ACCONT WIDTHRAW: $";
+            case 3: // Withdraw Money
+                cout << "Enter amount to withdraw: $";
                 cin >> amount;
-                myAccount.withdraw(amount);
+                if (accountType == 1)
+                {
+                    mySavings.withdraw(amount);
+                    cout << "Updated Savings Balance: $" << mySavings.getBalance() << "\n";
+                }
+                else
+                {
+                    myChequing.withdraw(amount); // Automatically subtracts transaction fee if successful!
+                    cout << "Updated Chequing Balance: $" << myChequing.getBalance() << "\n";
+                }
                 pauseAndContinue();
                 break;
 
-            case 4:
-                cout << "THANK YOU XYZ Bank.!\n";
-                return 0; // Exits the program
+            case 4: // Calculate & Apply Interest (Savings Account feature)
+            {
+                cout << "\n--- Savings Account Interest Calculation ---\n";
+                double interest = mySavings.calcInterest();
+                cout << "Interest Earned (balance * rate): $" << interest << "\n";
+                mySavings.deposit(interest);
+                cout << "New Savings Balance After Interest: $" << mySavings.getBalance() << "\n";
+                pauseAndContinue();
+                break;
+            }
 
             default:
-                cout << "INVALID PLEASE ENTER CHOICE 1-4.\n";
+                cout << "Invalid choice. Please select an option between 1 and 5.\n";
+                pauseAndContinue();
         }
     }
 
